@@ -24,7 +24,7 @@ void Door::lock() {
 }
 
 bool Door::lockDoorIfDoorClosed() {
-  bool isDoorOpen = checkDoorStatus();
+  bool isDoorOpen = isDoorOpen();
   bool shouldLock = (!isDoorOpen) && (wasDoorOpen);
   if (shouldLock) {
     lock();
@@ -33,7 +33,7 @@ bool Door::lockDoorIfDoorClosed() {
   return shouldLock;
 }
 
-bool Door::checkDoorStatus() {
+bool Door::isDoorOpen() {
   int doorState = digitalRead(pin);
   return (doorState == HIGH);
 }
@@ -47,7 +47,7 @@ void Door::startCheckingLockLoop() {
     }
     delay(Constants::closeMaxPeriod);
   }
-  if (!checkDoorStatus()) {
+  if (!isDoorOpen()) {
     lock();
   }
 }

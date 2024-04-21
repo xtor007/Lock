@@ -10,7 +10,7 @@ private:
   bool wasDoorOpen = false;
   bool isDoorUnlock = false;
 
-  bool checkDoorStatus();
+  bool isDoorOpen();
   void startCheckingLockLoop();
 public:
   Door(byte pin, byte lockPin);
