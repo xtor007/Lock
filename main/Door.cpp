@@ -1,35 +1,42 @@
+#include "Arduino.h"
 #include "Door.h"
 #include "Constants.h"
 
-Door::Door(byte pin, byte lockPin) {
+Door::Door(byte pin, byte lockPin, byte soundPin) {
   this->pin = pin;
-  this->lockPin = lockPin;
+  this->lockDevice = Lock(lockPin);
+  this->dynamic = Dynamic(soundPin);
 }
 
 void Door::init() {
   pinMode(pin, INPUT_PULLUP);
-  pinMode(lockPin, OUTPUT);
+  lockDevice.init();
+  dynamic.init();
 }
 
 void Door::unlock() {
   isDoorUnlock = true;
   delay(Constants::doorOpeningDelay);
-  digitalWrite(lockPin, HIGH); // tmp LED
+  lockDevice.unlock();
   startCheckingLockLoop();
+  dynamic.stop();
+  if (!isDoorOpen()) {
+    lock();
+  }
 }
 
 void Door::lock() {
   isDoorUnlock = false;
-  digitalWrite(lockPin, LOW); // tmp LED
+  lockDevice.lock();
 }
 
 bool Door::lockDoorIfDoorClosed() {
-  bool isDoorOpen = isDoorOpen();
-  bool shouldLock = (!isDoorOpen) && (wasDoorOpen);
+  bool isDoorOpened = isDoorOpen();
+  bool shouldLock = (!isDoorOpened) && (wasDoorOpen);
   if (shouldLock) {
     lock();
   }
-  wasDoorOpen = isDoorOpen;
+  wasDoorOpen = isDoorOpened;
   return shouldLock;
 }
 
@@ -40,14 +47,23 @@ bool Door::isDoorOpen() {
 
 void Door::startCheckingLockLoop() {
   int iterationsCount = Constants::waitingForDoorOpeningTime / Constants::closeMaxPeriod;
+  int soundPeriodicity = Constants::dynamicSoundDuration / Constants::closeMaxPeriod;
   for(int i = 0; i < iterationsCount; i++) {
+    flashDynamicIfNeeded(soundPeriodicity, i);
     bool isDoorClosing = lockDoorIfDoorClosed();
     if (isDoorClosing) {
       break;
     }
     delay(Constants::closeMaxPeriod);
   }
+}
+
+void Door::flashDynamicIfNeeded(int soundPeriodicity, int iteration) {
   if (!isDoorOpen()) {
-    lock();
-  }
+      if (iteration % soundPeriodicity == 0) {
+        dynamic.flashingSound(iteration / soundPeriodicity);
+      }
+    } else {
+      dynamic.stop();
+    }
 }
