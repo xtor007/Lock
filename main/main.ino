@@ -17,5 +17,5 @@ void loop() {
   if (openButton.checkButtonTapping()) {
     door.unlock();
   }
-  bool isDoorClosing = door.lockDoorIfDoorClosed();
+  door.lockDoorIfDoorClosed();
 }
