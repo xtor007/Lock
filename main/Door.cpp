@@ -1,4 +1,5 @@
 #include "Door.h"
+#include "Constants.h"
 
 Door::Door(byte pin, byte lockPin) {
   this->pin = pin;
@@ -12,7 +13,7 @@ void Door::init() {
 
 void Door::unlock() {
   isDoorUnlock = true;
-  delay(100);
+  delay(Constants::doorOpeningDelay);
   digitalWrite(lockPin, HIGH); // tmp LED
   startCheckingLockLoop();
 }
@@ -38,12 +39,13 @@ bool Door::checkDoorStatus() {
 }
 
 void Door::startCheckingLockLoop() {
-  for(int i = 0; i < 500; i++) {
+  int iterationsCount = Constants::waitingForDoorOpeningTime / Constants::closeMaxPeriod;
+  for(int i = 0; i < iterationsCount; i++) {
     bool isDoorClosing = lockDoorIfDoorClosed();
     if (isDoorClosing) {
       break;
     }
-    delay(10);
+    delay(Constants::closeMaxPeriod);
   }
   if (!checkDoorStatus()) {
     lock();
