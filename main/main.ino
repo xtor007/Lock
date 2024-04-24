@@ -2,6 +2,7 @@
 #include "Door.h"
 #include "CardReader.h"
 #include "Verifier.h"
+#include "Constants.h"
 
 // Pins
 
@@ -54,9 +55,13 @@ void checkButton() {
 }
 
 void checkCardReader() {
-  byte code;
+  byte code[Constants::maxBytesOnCard];
   byte codeSize;
-  if (cardReader.checkCard(&code, &codeSize) && verifier.checkCard(code, codeSize)) {
-    door.unlock();
+  if (cardReader.checkCard(code, &codeSize)) {
+    if (verifier.checkCard(code, codeSize)) {
+      door.unlock();
+    } else {
+      cardReader.setNewNotNormCard(codeSize, code);
+    }
   }
 }
