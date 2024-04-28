@@ -5,6 +5,8 @@
 #include <SPI.h>
 #include <MFRC522.h>
 
+#include "ICardCodeVerifier.h"
+
 class CardReader {
 private:
   byte resetPin;
@@ -15,15 +17,18 @@ private:
 
   MFRC522 mfrc522;
 
+  ICardCodeVerifier *verifier;
+
   byte lastNotNormCardSize = 0;
   byte *lastNotNormCardCode;
 
   bool compareWithNotNormCard(byte size, byte *code);
-public:
-  CardReader(byte resetPin, byte sdaPin, byte masiPin, byte misoPin, byte sckPin);
-  void init();
   bool checkCard(byte *buffer, byte *bufferSize);
   void setNewNotNormCard(byte size, byte *code);
+public:
+  CardReader(byte resetPin, byte sdaPin, byte masiPin, byte misoPin, byte sckPin, ICardCodeVerifier *verifier);
+  void init();
+  bool checkPossibleCard();
 };
 
 #endif

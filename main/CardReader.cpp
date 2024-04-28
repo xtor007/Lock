@@ -1,12 +1,14 @@
 #include "CardReader.h"
+#include "Constants.h"
 
-CardReader::CardReader(byte resetPin, byte sdaPin, byte masiPin, byte misoPin, byte sckPin) {
+CardReader::CardReader(byte resetPin, byte sdaPin, byte masiPin, byte misoPin, byte sckPin, ICardCodeVerifier *verifier) {
   this->resetPin = resetPin;
   this->sdaPin = sdaPin;
   this->masiPin = masiPin;
   this->misoPin = misoPin;
   this->sckPin = sckPin;
   this->mfrc522 = MFRC522(sdaPin, resetPin);
+  this->verifier = verifier;
 }
 
 void CardReader::init() {
@@ -14,6 +16,20 @@ void CardReader::init() {
   mfrc522.PCD_Init();
   delay(10);
   mfrc522.PCD_DumpVersionToSerial();
+}
+
+
+bool CardReader::checkPossibleCard() {
+  byte code[Constants::maxBytesOnCard];
+  byte codeSize;
+  if (checkCard(code, &codeSize)) {
+    if (verifier->checkCard(code, codeSize)) {
+      return true;
+    } else {
+      setNewNotNormCard(codeSize, code);
+    }
+  }
+  return false;
 }
 
 bool CardReader::checkCard(byte *code, byte *codeSize) {

@@ -1,15 +1,14 @@
 #include "Button.h"
 #include "Door.h"
 #include "CardReader.h"
-#include "Verifier.h"
-#include "Constants.h"
+#include "ServerCardCodeVerifier.h"
 
 // Pins
 
-#define OPEN_BUTTON_PIN 2
-#define DOOR_STATE_PIN 3
 #define SOUND_PIN 4
 #define UNLOCK_PIN 5
+#define OPEN_BUTTON_PIN 6
+#define DOOR_STATE_PIN 7
 
 #define CARD_READER_RESET_PIN 9
 #define CARD_READER_SDA_PIN 10
@@ -19,6 +18,8 @@
 
 // Global objects
 
+ServerCardCodeVerifier cardVerifier;
+
 Door door(DOOR_STATE_PIN, UNLOCK_PIN, SOUND_PIN);
 Button openButton(OPEN_BUTTON_PIN);
 CardReader cardReader(
@@ -26,15 +27,15 @@ CardReader cardReader(
   CARD_READER_SDA_PIN,
   CARD_READER_MASI_PIN,
   CARD_READER_MISO_PIN,
-  CARD_READER_SCK_PIN
+  CARD_READER_SCK_PIN,
+  &cardVerifier
 );
-
-Verifier verifier;
 
 // Lyfecycle
 
 void setup() {
   Serial.begin(9600);
+  while (!Serial);
   door.init();
   openButton.init();
   cardReader.init();
@@ -55,13 +56,7 @@ void checkButton() {
 }
 
 void checkCardReader() {
-  byte code[Constants::maxBytesOnCard];
-  byte codeSize;
-  if (cardReader.checkCard(code, &codeSize)) {
-    if (verifier.checkCard(code, codeSize)) {
-      door.unlock();
-    } else {
-      cardReader.setNewNotNormCard(codeSize, code);
-    }
+  if (cardReader.checkPossibleCard()) {
+    door.unlock();
   }
 }
