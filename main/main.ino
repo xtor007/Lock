@@ -1,7 +1,7 @@
-#include "Button.h"
-#include "Door.h"
-#include "CardReader.h"
-#include "ServerCardCodeVerifier.h"
+#include "src/inputDevices/Button/Button.h"
+#include "src/Door/Door.h"
+#include "src/inputDevices/CardReader/CardReader.h"
+#include "src/helpers/CardCodeVerifier/ServerCardCodeVerifier.h"
 
 // Pins
 

@@ -1,5 +1,5 @@
 #include "CardReader.h"
-#include "Constants.h"
+#include "../../Constants/Constants.h"
 
 CardReader::CardReader(byte resetPin, byte sdaPin, byte masiPin, byte misoPin, byte sckPin, ICardCodeVerifier *verifier) {
   this->resetPin = resetPin;

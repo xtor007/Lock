@@ -1,6 +1,6 @@
 #include "Arduino.h"
 #include "Door.h"
-#include "Constants.h"
+#include "../Constants/Constants.h"
 
 Door::Door(byte indicatorPin, byte lockPin, byte soundPin) {
   this->doorIndicator = DoorIndicator(indicatorPin);

@@ -5,7 +5,7 @@
 #include <SPI.h>
 #include <MFRC522.h>
 
-#include "ICardCodeVerifier.h"
+#include "../../Helpers/CardCodeVerifier/ICardCodeVerifier.h"
 
 class CardReader {
 private:

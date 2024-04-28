@@ -2,9 +2,9 @@
 #define DOOR_H
 
 #include <Arduino.h>
-#include "Dynamic.h"
-#include "Lock.h"
-#include "DoorIndicator.h"
+#include "Devices/Dynamic/Dynamic.h"
+#include "Devices/Lock/Lock.h"
+#include "Devices/DoorIndicator/DoorIndicator.h"
 
 class Door {
 private:
