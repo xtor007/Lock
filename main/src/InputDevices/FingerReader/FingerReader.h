@@ -23,7 +23,7 @@ public:
   FingerReader(byte rxPin, byte txPin, SoftwareSerial *reader, Adafruit_Fingerprint *finger, IFingerVerifier *verifier);
   void init();
   bool checkPossibleFinger();
-  ~FingerReader() { delete reader; delete finger; };
+  ~FingerReader() { delete reader; delete finger; delete verifier; };
 };
 
 #endif
