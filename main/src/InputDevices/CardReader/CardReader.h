@@ -29,6 +29,7 @@ public:
   CardReader(byte resetPin, byte sdaPin, byte masiPin, byte misoPin, byte sckPin, ICardCodeVerifier *verifier);
   void init();
   bool checkPossibleCard();
+  ~CardReader() { delete verifier; delete lastNotNormCardCode; };
 };
 
 #endif
