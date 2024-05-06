@@ -2,8 +2,6 @@
 #include "FingerReaderConstants.h"
 
 FingerReader::FingerReader(byte rxPin, byte txPin, SoftwareSerial *reader, Adafruit_Fingerprint *finger, IFingerVerifier *verifier) {
-  this->rxPin = rxPin;
-  this->txPin = txPin;
   this->reader = reader;
   this->finger = finger;
   this->verifier = verifier;
@@ -12,9 +10,9 @@ FingerReader::FingerReader(byte rxPin, byte txPin, SoftwareSerial *reader, Adafr
 void FingerReader::init() {
   finger->begin(57600);
   if (finger->verifyPassword()) {
-    Serial.println("Found fingerprint sensor!");
+    Serial.println(F("Found fingerprint sensor!"));
   } else {
-    Serial.println("Did not find fingerprint sensor :(");
+    Serial.println(F("Did not find fingerprint sensor :("));
   }
 }
 
@@ -49,28 +47,31 @@ bool FingerReader::loadFinger(uint8_t *fingerTemplate) {
   int status = finger->getModel();
   if (status != FINGERPRINT_OK)  { return false; }
 
-  uint8_t bytesReceived[FingerReaderConstants::fingerPackageSize]; // 2 data packets
-  memset(bytesReceived, 0xff, FingerReaderConstants::fingerPackageSize);
-
-  uint32_t starttime = millis();
-  int i = 0;
-  while (i < FingerReaderConstants::fingerPackageSize && (millis() - starttime) < FingerReaderConstants::readTime) {
-    if (reader->available()) {
-      bytesReceived[i++] = reader->read();
-    }
-  }
-
-  memset(fingerTemplate, 0xff, FingerReaderConstants::fingerCodeSize);
-
-  // filtering only the data packets
-  int uindx = FingerReaderConstants::headerSize, index = 0;
-  int halfFingerCodeSize = FingerReaderConstants::fingerCodeSize / 2;
-  memcpy(fingerTemplate + index, bytesReceived + uindx, halfFingerCodeSize);   // first 256 bytes
-  uindx += halfFingerCodeSize;       // skip data
-  uindx += FingerReaderConstants::checksumSize;         // skip checksum
-  uindx += FingerReaderConstants::headerSize;         // skip next header
-  index += halfFingerCodeSize;       // advance pointer
-  memcpy(fingerTemplate + index, bytesReceived + uindx, halfFingerCodeSize);   // second 256 bytes
+  writeFinger(fingerTemplate);
 
   return true;
+}
+
+void FingerReader::writeFinger(uint8_t *fingerTemplate) {
+  memset(fingerTemplate, 0xff, FingerReaderConstants::fingerCodeSize);
+
+  uint32_t starttime = millis();
+  int halfFingerCodeSize = FingerReaderConstants::fingerCodeSize / 2;
+
+  int i = 0;
+  int fingerIndex = 0;
+  while (i < FingerReaderConstants::fingerPackageSize && (millis() - starttime) < FingerReaderConstants::readTime) {
+    if (reader->available()) {
+      if (
+        (i - FingerReaderConstants::headerSize < 0)
+        || ((i - FingerReaderConstants::headerSize - halfFingerCodeSize > 0) && (i - FingerReaderConstants::headerSize - halfFingerCodeSize - FingerReaderConstants::checksumSize - FingerReaderConstants::headerSize < 0) )
+        || (i - FingerReaderConstants::headerSize - halfFingerCodeSize - FingerReaderConstants::checksumSize - FingerReaderConstants::headerSize - halfFingerCodeSize > 0)
+      ) {
+        i++;
+        continue;
+      }
+      fingerTemplate[fingerIndex++] = reader->read();
+      i++;
+    }
+  }
 }

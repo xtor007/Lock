@@ -12,7 +12,6 @@ public:
   DoorIndicator(byte pin);
   void init();
   bool isOpen();
-  bool isClose();
   bool isChangedDoorStatus();
 };
 

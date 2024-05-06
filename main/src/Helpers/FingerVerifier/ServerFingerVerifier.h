@@ -5,8 +5,6 @@
 #include "IFingerVerifier.h"
 
 class ServerFingerVerifier: public IFingerVerifier {
-private:
-  void dumpByteArray(uint8_t *buffer);
 public:
   ServerFingerVerifier() {};
   bool checkFinger(uint8_t *code) override;

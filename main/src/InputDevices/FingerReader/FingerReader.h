@@ -8,8 +8,6 @@
 
 class FingerReader {
 private:
-  byte rxPin;
-  byte txPin;
   SoftwareSerial *reader;
   Adafruit_Fingerprint *finger;
 
@@ -18,12 +16,13 @@ private:
   const int memoryCell = 1;
 
   bool checkFinger();
-  bool loadFinger(uint8_t *fingerCode);
+  bool loadFinger(uint8_t *fingerTemplate);
+  void writeFinger(uint8_t *fingerTemplate);
 public:
   FingerReader(byte rxPin, byte txPin, SoftwareSerial *reader, Adafruit_Fingerprint *finger, IFingerVerifier *verifier);
   void init();
   bool checkPossibleFinger();
-  ~FingerReader() { delete reader; delete finger; delete verifier; };
+  ~FingerReader() { };
 };
 
 #endif

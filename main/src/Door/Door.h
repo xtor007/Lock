@@ -12,9 +12,6 @@ private:
   Lock lockDevice;
   Dynamic dynamic;
 
-  bool isDoorUnlock = false;
-
-  bool isDoorOpen();
   void startCheckingLockLoop();
   void flashDynamicIfNeeded(int soundPeriodicity, int iteration);
 public:

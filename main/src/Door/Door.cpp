@@ -15,18 +15,16 @@ void Door::init() {
 }
 
 void Door::unlock() {
-  isDoorUnlock = true;
   delay(Constants::doorOpeningDelay);
   lockDevice.unlock();
   startCheckingLockLoop();
   dynamic.stop();
-  if (doorIndicator.isClose()) {
+  if (!doorIndicator.isOpen()) {
     lock();
   }
 }
 
 void Door::lock() {
-  isDoorUnlock = false;
   lockDevice.lock();
 }
 
@@ -43,8 +41,7 @@ void Door::startCheckingLockLoop() {
   int soundPeriodicity = Constants::dynamicSoundDuration / Constants::closeMaxPeriod;
   for(int i = 0; i < iterationsCount; i++) {
     flashDynamicIfNeeded(soundPeriodicity, i);
-    bool isDoorClosing = lockDoorIfDoorClosed();
-    if (isDoorClosing) {
+    if (lockDoorIfDoorClosed()) {
       break;
     }
     delay(Constants::closeMaxPeriod);
@@ -52,11 +49,11 @@ void Door::startCheckingLockLoop() {
 }
 
 void Door::flashDynamicIfNeeded(int soundPeriodicity, int iteration) {
-  if (doorIndicator.isClose()) {
-      if (iteration % soundPeriodicity == 0) {
-        dynamic.flashingSound(iteration / soundPeriodicity);
-      }
-    } else {
-      dynamic.stop();
+  if (!doorIndicator.isOpen()) {
+    if (iteration % soundPeriodicity == 0) {
+      dynamic.flashingSound(iteration / soundPeriodicity);
     }
+  } else {
+    dynamic.stop();
+  }
 }

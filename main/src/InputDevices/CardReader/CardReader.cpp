@@ -1,12 +1,7 @@
 #include "CardReader.h"
 #include "../../Constants/Constants.h"
 
-CardReader::CardReader(byte resetPin, byte sdaPin, byte masiPin, byte misoPin, byte sckPin, ICardCodeVerifier *verifier) {
-  this->resetPin = resetPin;
-  this->sdaPin = sdaPin;
-  this->masiPin = masiPin;
-  this->misoPin = misoPin;
-  this->sckPin = sckPin;
+CardReader::CardReader(byte resetPin, byte sdaPin, ICardCodeVerifier *verifier) {
   this->mfrc522 = MFRC522(sdaPin, resetPin);
   this->verifier = verifier;
 }
@@ -26,7 +21,8 @@ bool CardReader::checkPossibleCard() {
     if (verifier->checkCard(code, codeSize)) {
       return true;
     } else {
-      setNewNotNormCard(codeSize, code);
+      lastNotNormCardSize = codeSize;
+      memcpy(lastNotNormCardCode, code, codeSize);
     }
   }
   return false;
@@ -39,11 +35,6 @@ bool CardReader::checkCard(byte *code, byte *codeSize) {
   memcpy(code, mfrc522.uid.uidByte, mfrc522.uid.size);
   *codeSize = mfrc522.uid.size;
   return true;
-}
-
-void CardReader::setNewNotNormCard(byte size, byte *code) {
-  lastNotNormCardSize = size;
-  lastNotNormCardCode = code;
 }
 
 bool CardReader::compareWithNotNormCard(byte size, byte *code) {

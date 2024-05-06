@@ -13,11 +13,6 @@ bool DoorIndicator::isOpen() {
   return (doorState == HIGH);
 }
 
-bool DoorIndicator::isClose() {
-  int doorState = digitalRead(pin);
-  return !(doorState == HIGH);
-}
-
 bool DoorIndicator::isChangedDoorStatus() {
   bool isDoorOpened = isOpen();
   bool shouldLock = (!isDoorOpened) && (wasDoorOpen);
