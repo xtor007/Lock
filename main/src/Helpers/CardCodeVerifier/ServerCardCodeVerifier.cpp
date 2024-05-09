@@ -1,25 +1,15 @@
 #include "ServerCardCodeVerifier.h"
 
-const byte standartKey[] PROGMEM = { 0x33, 0xF2, 0x2F, 0x11 };
-
-bool ServerCardCodeVerifier::checkCard(byte *code, byte *codeSize) { // TODO: ask server
-  // dumpByteArray(code, codeSize);
-  byte standartSize = 4;
-  if (codeSize != standartSize) {
-    return false;
-  }
-  for (byte i = 0; i < codeSize; i++) {
-    if (code[i] != standartKey[i]) {
-      return false;
-    }
-  }
-  return true;
+void ServerCardCodeVerifier::checkCard(byte *code, byte *codeSize) {
+  char* codeStr = byteArrayToHexString(code);
+  network->send(PSTR("/verifier/verifyCard"), codeStr);
+  free(codeStr);
 }
 
-// void ServerCardCodeVerifier::dumpByteArray(byte *buffer, byte bufferSize) {
-//   for (byte i = 0; i < bufferSize; i++) {
-//     Serial.print(buffer[i] < 0x10 ? " 0" : " ");
-//     Serial.print(buffer[i], HEX);
-//   }
-//   Serial.println();
-// }
+char* ServerCardCodeVerifier::byteArrayToHexString(const byte* byteArray) {
+    char* hexString = (char*)malloc((sizeof byteArray) * 4 + 1);
+    for (int i = 0; i < (sizeof byteArray) * 2; i++) {
+      sprintf(hexString + 2 * i, "%02X", byteArray[i]);
+    }
+    return hexString;
+}

@@ -5,7 +5,7 @@
 
 class ICardCodeVerifier {
 public:
-  virtual bool checkCard(byte *code, byte *codeSize);
+  virtual void checkCard(byte *code, byte *codeSize);
   virtual ~ICardCodeVerifier() = default;
 };
 

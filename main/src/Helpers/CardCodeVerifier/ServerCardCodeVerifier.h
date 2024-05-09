@@ -3,11 +3,15 @@
 
 #include <Arduino.h>
 #include "ICardCodeVerifier.h"
+#include "../NetworkSender/INetworkSender.h"
 
 class ServerCardCodeVerifier: public ICardCodeVerifier {
+private:
+  INetworkSender* network;
+  char* byteArrayToHexString(const byte* byteArray);
 public:
-  ServerCardCodeVerifier() {};
-  bool checkCard(byte *code, byte *codeSize) override;
+  ServerCardCodeVerifier(INetworkSender* network) { this->network = network; };
+  void checkCard(byte *code, byte *codeSize) override;
 };
 
 #endif

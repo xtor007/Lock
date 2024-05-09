@@ -10,6 +10,11 @@ void Server::init() {
     else {
         Serial.println(F("Inet succesfully connected"));
     }
+    if (!ether.dhcpSetup()) {
+        Serial.println(F("DHCP failed"));
+    } else {
+        Serial.println("DHCP successed");
+    }
     ether.staticSetup(ServerConstants::sharedArraysInstanse()->myip);
 }
 
