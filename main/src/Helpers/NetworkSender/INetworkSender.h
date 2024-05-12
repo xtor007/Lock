@@ -5,6 +5,7 @@
 
 class INetworkSender {
 public:
+  virtual char* getQueryPrefix();
   virtual void send(const char *path, const char *code);
   virtual ~INetworkSender() = default;
 };

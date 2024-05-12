@@ -6,7 +6,7 @@ private:
   ServerConstants() {};
   static ServerConstants* sharedArrays;
 public:
-  static constexpr int bufferSize = 500;
+  static constexpr int bufferSize = 400;
   static constexpr int codeSize = 4;
   static constexpr int neededReqSize = 9;
 

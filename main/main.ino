@@ -32,12 +32,14 @@
 ServerConstants* ServerConstants::sharedArrays = nullptr;
 bool NetworkSender::isRequestFinished = true;
 bool NetworkSender::isRequestSuccessed = false;
+char* NetworkSender::query = nullptr;
 
 byte Ethernet::buffer[ServerConstants::bufferSize];
 
-NetworkSender networkSender;
+char sendCodePrefix[] = "?code=";
+NetworkSender networkSender(sendCodePrefix);
 ServerCardCodeVerifier cardVerifier(&networkSender);
-ServerFingerVerifier fingerVerifier;
+ServerFingerVerifier fingerVerifier(&networkSender);
 
 SoftwareSerial fingerReaderSerial(FINGER_READER_TX_PIN, FINGER_READER_RX_PIN);
 Adafruit_Fingerprint finger(&fingerReaderSerial);
@@ -78,7 +80,7 @@ void loop() {
   if (NetworkSender::isRequestFinished) {
     checkButton();
     cardReader.checkPossibleCard();
-    checkFingerReader();
+    fingerReader.checkPossibleFinger();
   }
   checkServer();
   checkNetworkSender();
@@ -88,12 +90,6 @@ void loop() {
 
 void checkButton() {
   if (openButton.checkButtonTapping()) {
-    door.unlock();
-  }
-}
-
-void checkFingerReader() {
-  if (fingerReader.checkPossibleFinger()) {
     door.unlock();
   }
 }

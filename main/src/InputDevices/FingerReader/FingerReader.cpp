@@ -16,10 +16,12 @@ void FingerReader::init() {
   }
 }
 
-bool FingerReader::checkPossibleFinger() {
+void FingerReader::checkPossibleFinger() {
   if (checkFinger()) {
     uint8_t fingerCode[FingerReaderConstants::fingerCodeSize];
-    return ((loadFinger(fingerCode)) && verifier->checkFinger(fingerCode));
+    if (loadFinger(fingerCode)) {
+      verifier->checkFinger(fingerCode);
+    }
   }
   return false;
 }
@@ -62,16 +64,16 @@ void FingerReader::writeFinger(uint8_t *fingerTemplate) {
   int fingerIndex = 0;
   while (i < FingerReaderConstants::fingerPackageSize && (millis() - starttime) < FingerReaderConstants::readTime) {
     if (reader->available()) {
-      if (
-        (i - FingerReaderConstants::headerSize < 0)
-        || ((i - FingerReaderConstants::headerSize - halfFingerCodeSize > 0) && (i - FingerReaderConstants::headerSize - halfFingerCodeSize - FingerReaderConstants::checksumSize - FingerReaderConstants::headerSize < 0) )
-        || (i - FingerReaderConstants::headerSize - halfFingerCodeSize - FingerReaderConstants::checksumSize - FingerReaderConstants::headerSize - halfFingerCodeSize > 0)
-      ) {
+      if (i - FingerReaderConstants::headerSize < 0) {
+        uint8_t symb = reader->read();
         i++;
         continue;
       }
-      fingerTemplate[fingerIndex++] = reader->read();
       i++;
+      uint8_t symb = reader->read();
+      if (fingerIndex < FingerReaderConstants::fingerCodeSize) {
+        fingerTemplate[fingerIndex++] = symb;
+      }
     }
   }
 }

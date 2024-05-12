@@ -21,7 +21,7 @@ private:
 public:
   FingerReader(byte rxPin, byte txPin, SoftwareSerial *reader, Adafruit_Fingerprint *finger, IFingerVerifier *verifier);
   void init();
-  bool checkPossibleFinger();
+  void checkPossibleFinger();
   ~FingerReader() { };
 };
 

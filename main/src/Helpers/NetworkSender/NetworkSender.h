@@ -7,15 +7,17 @@
 #include "INetworkSender.h"
 
 class NetworkSender: public INetworkSender {
-  void makeQuery(char*& query, char* code);
+  char *queryPrefix;
 public:
-  NetworkSender() {};
+  NetworkSender(char *prefix) { this->queryPrefix = prefix; };
 
   void init();
   void send(const char *path, const char *code) override;
+  char* getQueryPrefix() override { return queryPrefix; };
 
   static bool isRequestFinished;
   static bool isRequestSuccessed;
+  static char *query;
 
   static void responseDataWasProcessed() { isRequestSuccessed = false; };
   static void callback (byte status, word off, word len);

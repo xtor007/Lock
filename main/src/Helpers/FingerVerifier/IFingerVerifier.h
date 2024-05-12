@@ -5,7 +5,7 @@
 
 class IFingerVerifier {
 public:
-  virtual bool checkFinger(uint8_t *code);
+  virtual void checkFinger(uint8_t *code);
   virtual ~IFingerVerifier() = default;
 };
 
