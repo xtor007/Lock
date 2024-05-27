@@ -12,12 +12,8 @@ private:
   Adafruit_Fingerprint *finger;
 
   IFingerVerifier *verifier;
-  
-  const int memoryCell = 1;
 
-  bool checkFinger();
-  bool loadFinger(uint8_t *fingerTemplate);
-  void writeFinger(uint8_t *fingerTemplate);
+  bool checkFinger(int *index);
 public:
   FingerReader(byte rxPin, byte txPin, SoftwareSerial *reader, Adafruit_Fingerprint *finger, IFingerVerifier *verifier);
   void init();

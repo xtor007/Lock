@@ -8,11 +8,9 @@
 class ServerFingerVerifier: public IFingerVerifier {
 private:
   INetworkSender* network;
-  char* byteArrayToHexString(const byte* byteArray);
-  char* dumpByteArray(uint8_t *buffer);
 public:
   ServerFingerVerifier(INetworkSender* network) { this->network = network; };
-  void checkFinger(uint8_t *code) override;
+  void checkFinger(int index) override;
 };
 
 #endif
